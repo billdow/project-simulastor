@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Task Simulator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Project Task Simulator</h2>
+        
+        <!-- Task Input Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Import Tasks</h5>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-primary" id="importExcel">
+                    <i class="bi bi-file-earmark-excel"></i> Import Excel
+                </button>
+                <button class="btn btn-secondary" id="downloadTemplate">Download Template</button>
+                <small class="text-muted d-block mt-2">Upload an Excel file with columns: Task Name, Resource Name, Connected Task, Duration (days), Start Date</small>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Manual Task Entry</h5>
+            </div>
+            <div class="card-body">
+                <form id="taskForm">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="taskName">Task Name</label>
+                            <input type="text" class="form-control" id="taskName" placeholder="Enter task name">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="resourceName">Resource Name</label>
+                            <input type="text" class="form-control" id="resourceName" placeholder="Enter resource name">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="connectedTask">Connected Task</label>
+                            <select class="form-control" id="connectedTask">
+                                <option value="None">None</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="duration">Most Likely Duration (days)</label>
+                            <input type="number" class="form-control" id="duration" min="1">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" value="2024-12-07">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success float-end">Add Task</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Task Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>TASK NAME</th>
+                                <th>RESOURCE</th>
+                                <th>CONNECTED TASK</th>
+                                <th>START DATE</th>
+                                <th>FINISH DATE</th>
+                                <th>OPTIMISTIC</th>
+                                <th>MOST LIKELY</th>
+                                <th>PESSIMISTIC</th>
+                                <th>PERT ESTIMATE</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="taskTableBody"></tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <button class="btn btn-primary" id="refreshDurations">Refresh Durations</button>
+                    <button class="btn btn-secondary" id="exportToExcel">Export to Excel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Simulation Settings</h5>
+            </div>
+            <div class="card-body">
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                        <label for="simulationCount">Simulation Count</label>
+                        <input type="number" class="form-control" id="simulationCount" value="10000">
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary" id="runSimulation">Run Simulation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="simulationResults" style="display: none;">
+            <div class="card-header">
+                <h5>Simulation Results</h5>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="confidence-box bg-danger text-white">
+                            <h6>20% Confidence (80% Risk)</h6>
+                            <div class="days-result">6 days</div>
+                            <small>End: Dec 13, 2024</small>
+                            <div class="small mt-2">80% chance of exceeding this duration</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="confidence-box bg-info text-white">
+                            <h6>50% Confidence (50% Risk)</h6>
+                            <div class="days-result">5 days</div>
+                            <small>End: Dec 12, 2024</small>
+                            <div class="small mt-2">50% chance of exceeding this duration</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="confidence-box bg-success text-white">
+                            <h6>90% Confidence (10% Risk)</h6>
+                            <div class="days-result">4 days</div>
+                            <small>End: Dec 11, 2024</small>
+                            <div class="small mt-2">10% chance of exceeding this duration</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>Duration Distribution</h5>
+                        <div style="height: 300px;">
+                            <canvas id="simulationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1"></script>
+    <script>
+        // Create a global function to create charts
+        window.createChart = function(canvasId, labels, data, confidenceLevels) {
+            console.log('Creating chart:', { 
+                canvasId, 
+                dataLength: data.length,
+                labelsLength: labels.length,
+                confidenceLevels
+            });
+            
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error('Canvas not found:', canvasId);
+                return false;
+            }
+
+            // Clear existing chart
+            if (window[canvasId + 'Chart']) {
+                window[canvasId + 'Chart'].destroy();
+            }
+
+            // Find the index of the bar with the most simulations
+            const maxFrequencyIndex = data.reduce((maxIndex, currentValue, currentIndex, arr) => 
+                currentValue > arr[maxIndex] ? currentIndex : maxIndex, 0);
+
+            // Create background colors array
+            const backgroundColor = data.map((_, index) => 
+                index === maxFrequencyIndex 
+                    ? 'rgba(40, 167, 69, 0.7)' // Green for most confident bar
+                    : 'rgba(54, 162, 235, 0.5)' // Original blue for other bars
+            );
+
+            try {
+                const ctx = canvas.getContext('2d');
+                window[canvasId + 'Chart'] = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Number of Simulations',
+                            data: data,
+                            backgroundColor: backgroundColor,
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            annotation: {
+                                annotations: {
+                                    p20Line: {
+                                        type: 'line',
+                                        xMin: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p20
+                                        ),
+                                        xMax: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p20
+                                        ),
+                                        borderColor: 'rgba(255, 99, 132, 1)',
+                                        borderWidth: 2,
+                                        label: {
+                                            content: '20% Confidence',
+                                            display: true
+                                        }
+                                    },
+                                    p50Line: {
+                                        type: 'line',
+                                        xMin: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p50
+                                        ),
+                                        xMax: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p50
+                                        ),
+                                        borderColor: 'rgba(255, 206, 86, 1)',
+                                        borderWidth: 2,
+                                        label: {
+                                            content: '50% Confidence',
+                                            display: true
+                                        }
+                                    },
+                                    p90Line: {
+                                        type: 'line',
+                                        xMin: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p90
+                                        ),
+                                        xMax: labels.findIndex(label => 
+                                            parseFloat(label.split('-')[0]) >= confidenceLevels.p90
+                                        ),
+                                        borderColor: 'rgba(75, 192, 192, 1)',
+                                        borderWidth: 2,
+                                        label: {
+                                            content: '90% Confidence',
+                                            display: true
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Project Duration (Days)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Simulations'
+                                },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+                console.log('Chart created successfully', {
+                    maxFrequencyIndex,
+                    maxFrequency: data[maxFrequencyIndex]
+                });
+                return true;
+            } catch (error) {
+                console.error('Error creating chart:', error);
+                return false;
+            }
+        };
+    </script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

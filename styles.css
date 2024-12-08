@@ -1,0 +1,167 @@
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.confidence-box {
+    border-radius: 8px;
+    height: 100%;
+    padding: 1rem;
+}
+
+.confidence-box h6 {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.confidence-box .days-result {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.confidence-box small {
+    font-size: 0.8rem;
+}
+
+.days-result {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.table th {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #666;
+    padding: 0.5rem;
+}
+
+.table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
+    padding: 0.5rem;
+}
+
+.table input.form-control-sm,
+.table select.form-control-sm {
+    padding: 0.25rem 0.5rem;
+    height: calc(1.5em + 0.5rem + 2px);
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    width: 100%;
+}
+
+.table input[type="number"] {
+    min-width: 80px;
+}
+
+.table input[type="date"] {
+    min-width: 130px;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+}
+
+.btn-primary {
+    background-color: #4361ee;
+    border-color: #4361ee;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-success {
+    background-color: #2ec4b6;
+    border-color: #2ec4b6;
+}
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    margin-top: 2rem;
+    padding: 1rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Remove any chart-specific styles that might interfere */
+canvas#simulationChart {
+    max-width: 100%;
+}
+
+.form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+.form-control:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+}
+
+small.text-muted {
+    color: #6c757d !important;
+}
+
+.table-responsive {
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.task-item {
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.task-dates {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.duration-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-right: 0.5rem;
+}
+
+.optimistic {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.most-likely {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.pessimistic {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+}
+
+.table tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}
